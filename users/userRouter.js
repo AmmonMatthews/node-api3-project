@@ -1,7 +1,7 @@
 const express = require('express');
 
 const Users = require('./userDb.js')
-
+const Posts = require('../posts/postDb.js')
 
 const router = express.Router();
 // Tested
@@ -18,10 +18,12 @@ router.post('/', validateUser,  (req, res) => {
       })
 });
 // Tested
-router.post('/:id/posts', validateUserId, validatePost, (req, res) => {
+router.post('/:id/posts',  (req, res) => {
   // do your magic!
-  const newPost = req.body
-    Users.insert(newPost)
+  const { id } = req.params
+  const newPost = {...req.body, user_id: id}
+  console.log(newPost)
+    Posts.insert(newPost) //the problem lies here
       .then(post => {
         res.status(201).json(post)
       })
@@ -57,11 +59,11 @@ router.get('/:id', validateUserId, (req, res) => {
     res.status(404).json({ err: "users could not be found."})
   })
 });
-
+// Tested
 router.get('/:id/posts', validateUserId, (req, res) => {
   // do your magic!
   const{ id } = req.params
-  Users.getById(id)
+  Users.getUserPosts(id)
   .then(users => {
     res.status(201).json(users)
   })
